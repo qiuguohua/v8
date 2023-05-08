@@ -41,9 +41,17 @@ asm(
     // Sign return address.
     "  paciasp                                          \n"
 #endif
+
+#if defined(__QNX__)
+    "  stp x29, x30,   [sp, #-16]!                      \n"
+    // Maintain frame pointer.
+    "  mov x29, sp                                      \n"
+#else
     "  stp fp, lr,   [sp, #-16]!                        \n"
+
     // Maintain frame pointer.
     "  mov fp, sp                                       \n"
+#endif
     // Pass 1st parameter (x0) unchanged (Stack*).
     // Pass 2nd parameter (x1) unchanged (StackVisitor*).
     // Save 3rd parameter (x2; IterateStackCallback)
@@ -52,7 +60,11 @@ asm(
     "  mov x2, sp                                       \n"
     "  blr x7                                           \n"
     // Load return address and frame pointer.
+#if defined(__QNX__)
+    "  ldp x29, x30, [sp], #16                          \n"
+#else
     "  ldp fp, lr, [sp], #16                            \n"
+#endif
 #ifdef V8_ENABLE_CONTROL_FLOW_INTEGRITY
     // Authenticate return address.
     "  autiasp                                          \n"

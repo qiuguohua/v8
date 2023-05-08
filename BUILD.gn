@@ -4607,8 +4607,6 @@ v8_component("v8_libbase") {
     ]
 
     libs = [
-      "dl",
-      "rt",
     ]
   } else if (current_os == "aix") {
     sources += [

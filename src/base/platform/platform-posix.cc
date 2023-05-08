@@ -61,7 +61,7 @@
 #include <sys/resource.h>
 #endif
 
-#if !defined(_AIX) && !defined(V8_OS_FUCHSIA)
+#if !defined(_AIX) && !defined(V8_OS_FUCHSIA) && !defined(V8_OS_QNX)
 #include <sys/syscall.h>
 #endif
 
@@ -78,7 +78,11 @@ extern int madvise(caddr_t, size_t, int);
 #endif
 
 #ifndef MADV_FREE
-#define MADV_FREE MADV_DONTNEED
+#if (V8_OS_QNX)
+	#define MADV_FREE POSIX_MADV_DONTNEED
+#else
+	#define MADV_FREE MADV_DONTNEED
+#endif
 #endif
 
 #if defined(V8_LIBC_GLIBC)
@@ -458,6 +462,8 @@ bool OS::DiscardSystemPages(void* address, size_t size) {
   int ret = madvise(address, size, MADV_FREE_REUSABLE);
 #elif defined(_AIX) || defined(V8_OS_SOLARIS)
   int ret = madvise(reinterpret_cast<caddr_t>(address), size, MADV_FREE);
+#elif defined(V8_OS_QNX)
+  int ret = posix_madvise(address, size, MADV_FREE);
 #else
   int ret = madvise(address, size, MADV_FREE);
 #endif
@@ -469,6 +475,8 @@ bool OS::DiscardSystemPages(void* address, size_t size) {
 // imply runtime support.
 #if defined(_AIX) || defined(V8_OS_SOLARIS)
     ret = madvise(reinterpret_cast<caddr_t>(address), size, MADV_DONTNEED);
+#elif defined(V8_OS_QNX)
+  ret = posix_madvise(address, size, POSIX_MADV_DONTNEED);
 #else
     ret = madvise(address, size, MADV_DONTNEED);
 #endif
@@ -607,6 +615,8 @@ int OS::GetCurrentProcessId() {
 int OS::GetCurrentThreadId() {
 #if V8_OS_MACOSX || (V8_OS_ANDROID && defined(__APPLE__))
   return static_cast<int>(pthread_mach_thread_np(pthread_self()));
+#elif V8_OS_QNX
+  return static_cast<int>(pthread_self());
 #elif V8_OS_LINUX
   return static_cast<int>(syscall(__NR_gettid));
 #elif V8_OS_ANDROID
@@ -1021,7 +1031,11 @@ void Thread::SetThreadLocal(LocalStorageKey key, void* value) {
 // static
 Stack::StackSlot Stack::GetStackStart() {
   pthread_attr_t attr;
+#if V8_OS_QNX
+  int error = 0;//= pthread_getattr_np(pthread_self(), &attr);
+#else
   int error = pthread_getattr_np(pthread_self(), &attr);
+#endif
   if (!error) {
     void* base;
     size_t size;

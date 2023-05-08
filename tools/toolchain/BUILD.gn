@@ -4,27 +4,50 @@
 
 import("//build/toolchain/gcc_toolchain.gni")
 
-gcc_toolchain("mips-bundled") {
-  toolprefix = rebase_path("//tools/mips_toolchain/bin/mips-mti-linux-gnu-",
-                           root_build_dir)
-  cc = "${toolprefix}gcc"
-  cxx = "${toolprefix}g++"
+gcc_toolchain("test-toolchain") {
+  toolprefix = "/home/yc/code/qcc_custom_cc_700/" 
+  cc = "${toolprefix}qcc"
+  cxx = "${toolprefix}q++"
 
-  readelf = "${toolprefix}readelf"
-  nm = "${toolprefix}nm"
-  ar = "${toolprefix}ar"
-  ld = cxx
+  #gcc_prefix="/home/yc/qnx700/host/linux/x86_64/usr/bin/aarch64-unknown-nto-qnx7.0.0-"
+  gcc_prefix="/home/yc/qnx700/host/linux/x86_64/usr/bin/aarch64-unknown-nto-qnx7.0.0-"
+  readelf = "${gcc_prefix}readelf"
+  nm = "${gcc_prefix}nm"
+  ar = "${gcc_prefix}ar"
+  #ld = cxx
+  ld = "${gcc_prefix}g++"
 
   # Flag that sets endianness
-  extra_ldflags = "-EB"
-  extra_cppflags = "-EB"
 
   toolchain_args = {
-    current_cpu = "mips"
-    current_os = "linux"
     is_clang = false
+    current_cpu = "x64"
+    current_os = "linux"
   }
 }
+#gcc_toolchain("test-toolchain"){
+#   toolprefix = "/root/program/hmsdk/sysroots/x86_64-eulersdk-linux/usr/bin/"
+#   cc = "${toolprefix}aarch64-euler-elf-gcc"
+#   cxx = "${toolprefix}aarch64-euler-elf-g++"
+#
+#   readelf = "${toolprefix}aarch64-euler-elf-readelf"
+#   #nm = "${gcc_prefix}nm"
+#   nm = "${toolprefix}aarch64-euler-elf-nm"
+#   #ar = "${gcc_prefix}ar"
+#   ar = "${toolprefix}aarch64-euler-elf-ar"
+#   ld = cxx
+#   #ld="${toolprefix}aarch64-euler-elf-ld"
+#   #ld="/root/program/hmsdk/sysroots/x86_64-eulersdk-linux/usr/bin/aarch64-hongmeng-musl-ld"
+#   #Flag that sets endianness and ABI
+#   #extra_ldflags = "-EB -mabi=64"
+#   #extra_cppflags = "-EB -mabi=64"
+#   extra_cppflags = "-D__linux__"
+#   toolchain_args = {
+#      current_cpu = "aarch64"
+#      current_os = "linux"
+#      is_clang = false
+#   }
+#}
 
 gcc_toolchain("mips64-bundled") {
   toolprefix = rebase_path("//tools/mips_toolchain/bin/mips-mti-linux-gnu-",
@@ -43,28 +66,6 @@ gcc_toolchain("mips64-bundled") {
 
   toolchain_args = {
     current_cpu = "mips64"
-    current_os = "linux"
-    is_clang = false
-  }
-}
-
-gcc_toolchain("mipsel-bundled") {
-  toolprefix = rebase_path("//tools/mips_toolchain/bin/mips-mti-linux-gnu-",
-                           root_build_dir)
-  cc = "${toolprefix}gcc"
-  cxx = "${toolprefix}g++"
-
-  readelf = "${toolprefix}readelf"
-  nm = "${toolprefix}nm"
-  ar = "${toolprefix}ar"
-  ld = cxx
-
-  # Flag that sets endianness
-  extra_ldflags = "-EL"
-  extra_cppflags = "-EL"
-
-  toolchain_args = {
-    current_cpu = "mipsel"
     current_os = "linux"
     is_clang = false
   }

@@ -152,7 +152,16 @@ enum class StackLimitKind { kInterruptStackLimit, kRealStackLimit };
 
 class V8_EXPORT_PRIVATE TurboAssembler : public TurboAssemblerBase {
  public:
-  using TurboAssemblerBase::TurboAssemblerBase;
+  // using TurboAssemblerBase::TurboAssemblerBase;
+  TurboAssembler(Isolate* isolate, CodeObjectRequired create_code_object,
+                 std::unique_ptr<AssemblerBuffer> buffer = {})
+      : TurboAssembler(isolate, AssemblerOptions::Default(isolate),
+                       create_code_object, std::move(buffer)) {}
+  TurboAssembler(Isolate* isolate, const AssemblerOptions& options,
+                 CodeObjectRequired create_code_object,
+                 std::unique_ptr<AssemblerBuffer> buffer)
+      : TurboAssemblerBase(isolate, options, create_code_object,
+                           std::move(buffer)) {}
 
 #if DEBUG
   void set_allow_macro_instructions(bool value) {
@@ -1473,7 +1482,17 @@ class V8_EXPORT_PRIVATE TurboAssembler : public TurboAssemblerBase {
 
 class V8_EXPORT_PRIVATE MacroAssembler : public TurboAssembler {
  public:
-  using TurboAssembler::TurboAssembler;
+  //using TurboAssembler::TurboAssembler;
+
+  MacroAssembler(Isolate* isolate, CodeObjectRequired create_code_object,
+                 std::unique_ptr<AssemblerBuffer> buffer = {})
+      : MacroAssembler(isolate, AssemblerOptions::Default(isolate),
+                       create_code_object, std::move(buffer)) {}
+  MacroAssembler(Isolate* isolate, const AssemblerOptions& options,
+                 CodeObjectRequired create_code_object,
+                 std::unique_ptr<AssemblerBuffer> buffer)
+      : TurboAssembler(isolate, options, create_code_object,
+                       std::move(buffer)) {}
 
   // Instruction set functions ------------------------------------------------
   // Logical macros.

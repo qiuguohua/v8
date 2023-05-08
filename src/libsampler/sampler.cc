@@ -325,7 +325,8 @@ class SignalHandler {
     sa.sa_sigaction = &HandleProfilerSignal;
     sigemptyset(&sa.sa_mask);
 #if V8_OS_QNX
-    sa.sa_flags = SA_SIGINFO | SA_ONSTACK;
+    // sa.sa_flags = SA_SIGINFO | SA_ONSTACK;
+    sa.sa_flags = SA_SIGINFO;
 #else
     sa.sa_flags = SA_RESTART | SA_SIGINFO | SA_ONSTACK;
 #endif
@@ -372,7 +373,21 @@ void SignalHandler::FillRegisterState(void* context, RegisterState* state) {
        (V8_HOST_ARCH_PPC || V8_HOST_ARCH_S390 || V8_HOST_ARCH_PPC64)))
   mcontext_t& mcontext = ucontext->uc_mcontext;
 #endif
-#if V8_OS_LINUX
+#if V8_OS_QNX
+#if V8_HOST_ARCH_IA32
+  state->pc = reinterpret_cast<void*>(mcontext.cpu.eip);
+  state->sp = reinterpret_cast<void*>(mcontext.cpu.esp);
+  state->fp = reinterpret_cast<void*>(mcontext.cpu.ebp);
+#elif V8_HOST_ARCH_ARM
+  state->pc = reinterpret_cast<void*>(mcontext.cpu.gpr[ARM_REG_PC]);
+  state->sp = reinterpret_cast<void*>(mcontext.cpu.gpr[ARM_REG_SP]);
+  state->fp = reinterpret_cast<void*>(mcontext.cpu.gpr[ARM_REG_FP]);
+#elif V8_HOST_ARCH_ARM64
+  state->pc = reinterpret_cast<void*>(GET_REGIP(&(mcontext.cpu)));
+  state->sp = reinterpret_cast<void*>(GET_REGSP(&(mcontext.cpu)));
+  state->lr = reinterpret_cast<void*>(mcontext.cpu.gpr[AARCH64_REG_LR]);  
+#endif  // V8_HOST_ARCH_*
+#elif V8_OS_LINUX
 #if V8_HOST_ARCH_IA32
   state->pc = reinterpret_cast<void*>(mcontext.gregs[REG_EIP]);
   state->sp = reinterpret_cast<void*>(mcontext.gregs[REG_ESP]);

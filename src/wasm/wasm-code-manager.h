@@ -618,7 +618,8 @@ class V8_EXPORT_PRIVATE NativeModule final {
   void set_lazy_compile_frozen(bool frozen) { lazy_compile_frozen_ = frozen; }
   bool lazy_compile_frozen() const { return lazy_compile_frozen_; }
   Vector<const uint8_t> wire_bytes() const {
-    return std::atomic_load(&wire_bytes_)->as_vector();
+    //return std::atomic_load(&wire_bytes_)->as_vector();
+    return wire_bytes_->as_vector();
   }
   const WasmModule* module() const { return module_.get(); }
   std::shared_ptr<const WasmModule> shared_module() const { return module_; }
@@ -634,8 +635,9 @@ class V8_EXPORT_PRIVATE NativeModule final {
   WasmEngine* engine() const { return engine_; }
 
   bool HasWireBytes() const {
-    auto wire_bytes = std::atomic_load(&wire_bytes_);
-    return wire_bytes && !wire_bytes->empty();
+    //auto wire_bytes = std::atomic_load(&wire_bytes_);
+    //return wire_bytes && !wire_bytes->empty();
+	return wire_bytes_ && wire_bytes_->empty();
   }
   void SetWireBytes(OwnedVector<const uint8_t> wire_bytes);
 
@@ -780,7 +782,8 @@ class V8_EXPORT_PRIVATE NativeModule final {
 
   // Wire bytes, held in a shared_ptr so they can be kept alive by the
   // {WireBytesStorage}, held by background compile tasks.
-  std::shared_ptr<OwnedVector<const uint8_t>> wire_bytes_;
+  using OwnedVectorType = OwnedVector<const uint8_t>;
+  std::shared_ptr<OwnedVectorType> wire_bytes_;
 
   // The first allocated jump table. Always used by external calls (from JS).
   // Wasm calls might use one of the other jump tables stored in

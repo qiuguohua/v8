@@ -10,9 +10,13 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#if !defined(V8_OS_QNX)
 #include <sys/prctl.h>
+#endif
 #include <sys/resource.h>
+#if !defined(V8_OS_QNX)
 #include <sys/syscall.h>
+#endif
 #include <sys/time.h>
 
 // Ubuntu Dapper requires memory pages to be marked as
@@ -145,6 +149,7 @@ void OS::SignalCodeMovingGC() {
 void OS::AdjustSchedulingParams() {}
 
 void* OS::RemapShared(void* old_address, void* new_address, size_t size) {
+#if !defined(V8_OS_QNX)
   void* result =
       mremap(old_address, 0, size, MREMAP_FIXED | MREMAP_MAYMOVE, new_address);
 
@@ -153,6 +158,10 @@ void* OS::RemapShared(void* old_address, void* new_address, size_t size) {
   }
   DCHECK(result == new_address);
   return result;
+
+#else
+  return nullptr;
+#endif
 }
 
 }  // namespace base
