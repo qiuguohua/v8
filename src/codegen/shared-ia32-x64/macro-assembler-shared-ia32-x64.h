@@ -23,12 +23,13 @@ class Assembler;
 
 class V8_EXPORT_PRIVATE SharedTurboAssembler : public TurboAssemblerBase {
  public:
-  //using TurboAssemblerBase::TurboAssemblerBase;
-     SharedTurboAssembler(Isolate* isolate, const AssemblerOptions& options,
-                  CodeObjectRequired create_code_object,
-                  std::unique_ptr<AssemblerBuffer> buffer):
-                  TurboAssemblerBase(isolate, options, create_code_object, buffer)
-  void Movapd(XMMRegister dst, XMMRegister src);
+  // using TurboAssemblerBase::TurboAssemblerBase;
+  SharedTurboAssembler(Isolate* isolate, const AssemblerOptions& options,
+                       CodeObjectRequired create_code_object,
+                       std::unique_ptr<AssemblerBuffer> buffer)
+      : TurboAssemblerBase(isolate, options, create_code_object,
+                           buffer) void Movapd(XMMRegister dst,
+                                               XMMRegister src);
 
   template <typename Dst, typename Src>
   void Movdqu(Dst dst, Src src) {

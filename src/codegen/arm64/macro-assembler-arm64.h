@@ -1482,8 +1482,7 @@ class V8_EXPORT_PRIVATE TurboAssembler : public TurboAssemblerBase {
 
 class V8_EXPORT_PRIVATE MacroAssembler : public TurboAssembler {
  public:
-  //using TurboAssembler::TurboAssembler;
-
+  // using TurboAssembler::TurboAssembler;
   MacroAssembler(Isolate* isolate, CodeObjectRequired create_code_object,
                  std::unique_ptr<AssemblerBuffer> buffer = {})
       : MacroAssembler(isolate, AssemblerOptions::Default(isolate),

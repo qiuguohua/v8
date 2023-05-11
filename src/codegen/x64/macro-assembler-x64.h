@@ -16,7 +16,6 @@
 #include "src/common/globals.h"
 #include "src/objects/contexts.h"
 #include "src/objects/tagged-index.h"
-#include <memory>
 
 namespace v8 {
 namespace internal {
@@ -62,11 +61,7 @@ class StackArgumentsAccessor {
 
 class V8_EXPORT_PRIVATE TurboAssembler : public SharedTurboAssembler {
  public:
-  //using SharedTurboAssembler::SharedTurboAssembler;
-     TurboAssembler(Isolate* isolate, const AssemblerOptions& options,
-                  CodeObjectRequired create_code_object,
-                  std::unique_ptr<AssemblerBuffer> buffer):
-                  SharedTurboAssembler(isolate, options, create_code_object, std::move(buffer))
+  using SharedTurboAssembler::SharedTurboAssembler;
   AVX_OP(Subsd, subsd)
   AVX_OP(Divss, divss)
   AVX_OP(Divsd, divsd)
@@ -701,15 +696,8 @@ class V8_EXPORT_PRIVATE TurboAssembler : public SharedTurboAssembler {
 // MacroAssembler implements a collection of frequently used macros.
 class V8_EXPORT_PRIVATE MacroAssembler : public TurboAssembler {
  public:
-   //using TurboAssembler::TurboAssembler;
-     MacroAssembler(Isolate* isolate, CodeObjectRequired create_code_object,
-                     std::unique_ptr<AssemblerBuffer> buffer = {})
-      : MacroAssembler(isolate, AssemblerOptions::Default(isolate),
-                           create_code_object, std::move(buffer)) {}
-   MacroAssembler(Isolate* isolate, const AssemblerOptions& options,
-                  CodeObjectRequired create_code_object,
-                  std::unique_ptr<AssemblerBuffer> buffer):
-                  TurboAssembler(isolate, options, create_code_object, std::move(buffer)) {}
+  using TurboAssembler::TurboAssembler;
+
   // Loads and stores the value of an external reference.
   // Special case code for load and store to take advantage of
   // load_rax/store_rax if possible/necessary.

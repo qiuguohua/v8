@@ -92,7 +92,7 @@ SANITIZE_PCS = os.path.join(BASE_DIR, 'tools', 'sanitizers', 'sanitize_pcs.py')
 
 # The llvm symbolizer location.
 SYMBOLIZER = os.path.join(
-    BASE_DIR, 'third_party', 'llvm-build', 'Releas222e+Asserts', 'bin',
+    BASE_DIR, 'third_party', 'llvm-build', 'Release+Asserts', 'bin',
     'llvm-symbolizer')
 
 # Number of cpus.

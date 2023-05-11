@@ -1477,10 +1477,13 @@ class NativeModuleWireBytesStorage final : public WireBytesStorage {
       : wire_bytes_(std::move(wire_bytes)) {}
 
   Vector<const uint8_t> GetCode(WireBytesRef ref) const final {
-    // return std::atomic_load(&wire_bytes_)
-    //     ->as_vector()
-    //     .SubVector(ref.offset(), ref.end_offset());
+#if defined(V8_OS_QNX)
     return wire_bytes_->as_vector().SubVector(ref.offset(), ref.end_offset());
+#else
+    return std::atomic_load(&wire_bytes_)
+        ->as_vector()
+        .SubVector(ref.offset(), ref.end_offset());
+#endif
   }
 
  private:
@@ -1491,8 +1494,11 @@ class NativeModuleWireBytesStorage final : public WireBytesStorage {
 void NativeModule::SetWireBytes(OwnedVector<const uint8_t> wire_bytes) {
   auto shared_wire_bytes =
       std::make_shared<OwnedVector<const uint8_t>>(std::move(wire_bytes));
+#if defined(V8_OS_QNX)
   wire_bytes_ = shared_wire_bytes;
-  //std::atomic_store(&wire_bytes_, shared_wire_bytes);
+#else
+  std::atomic_store(&wire_bytes_, shared_wire_bytes);
+#endif
   if (!shared_wire_bytes->empty()) {
     compilation_state_->SetWireBytesStorage(
         std::make_shared<NativeModuleWireBytesStorage>(
